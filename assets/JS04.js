@@ -72,46 +72,34 @@ function displayTopPage() {
 
     // processAll();
 
-    const finishQuizContent = new Promise((resolve, reject) => {
-        quiz = fetch('https://opentdb.com/api.php?amount=10').then(function  (response) {
-          return response.json();
-        }).then(function(json) {
-            return json.results;
-        })
-        // console.log(quizContent);
-        console.log(quiz[1].difficulty);
+    clickbtn.hidden = true;
+    fetchQuiz();
 
-        resolve();
-      })
-
-    const finishDisplayStayPage = new Promise((resolve, reject) => {
-        displayStayPage();
-        resolve();
-      })
-
-    const displayQuizPage = new Promise((resolve, reject) => {
-        output.textContent = '';
-        console.log('add');
-        add();
-        resolve();
-    })
-
-     finishQuizContent.then(finishDisplayStayPage).then(displayQuizPage);
+     //finishQuizContent.then(finishDisplayStayPage).then(displayQuizPage);
   } )
-
 }
 displayTopPage();
 
-function add() {
-  if (count < 10) {
-    displayQuiz();
-    }else{
-      displayResult();
-    }
-}
+const fetchQuiz = async() => {
+  const url = 'https://opentdb.com/api.php?amount=10';
+  fetch(url).then((response) => {
+    return response.json()
+  }).then((result) => {
+    // Example(result);
+    quiz = result.results;
+    console.log(quiz);
+  }).catch((e) => {
+    console.log(e)
+  })
 
-function displayStayPage() {
-  console.log('displayStayPage');
+  // function Example(jsonObj){
+  //   quiz = jsonObj.result[0]
+  // }
+
+  // const json = (await fetch('https://opentdb.com/api.php?amount=10')).json().results;
+  // const obj =  JSON.parse(json);
+  // console.log(obj.results);
+
   const h = document.createElement('h1');
   h.textContent = '取得中'
   output.appendChild(h);
@@ -125,30 +113,86 @@ function displayStayPage() {
 
   const hr2 = document.createElement('hr');
   output.appendChild(hr2);
+
+  displayQuiz();
 }
 
 //クイズを取り出す
-// function quizContent() {
+// const fetchQuiz1 = new Promise((resolve, reject) => {
+//   if (fetch('https://opentdb.com/api.php?amount=10')) {
+//     resolve(fetch('https://opentdb.com/api.php?amount=10').json());
+//   } else {
+//     reject();
+//   }
+// });
 
-//   fetch('https://opentdb.com/api.php?amount=10').then(function  (response) {
+// const onFullfilled = () => {
+//   const h = document.createElement('h1');
+//   h.textContent = '取得中'
+//   output.appendChild(h);
+
+//   const hr1 = document.createElement('hr');
+//   output.appendChild(hr1);
+
+//   const p = document.createElement('p');
+//   p.textContent = '少々お待ちください。';
+//   output.appendChild(p);
+
+//   const hr2 = document.createElement('hr');
+//   output.appendChild(hr2);
+
+//   displayQuizPage();
+// }
+
+// const onRejected = () => {
+//   console.log('reject');
+// }
+
+// fetchQuiz1.then(onFullfilled, onRejected);
+
+
+// const fetchQuiz = new Promise((resolve, reject) => {
+//   quiz = fetch('https://opentdb.com/api.php?amount=10').then(function  (response) {
 //     return response.json();
 //   }).then(function(json) {
 //       return json.results;
-//   }).then(function(results) {
-//     for (let i = 0; i< results.length; i++) {
-//       janre[i] = results[i].category;
-//       difficulty[i] = results[i].difficulty;
-//       question[i] = results[i].question;
-//       type[i] = results[i].type;
-//       correct_answer[i] = results[i].correct_answer;
-//       incorrect_answers[i] = results[i].incorrect_answers;
-//     }
-//     console.log('finishquizontent');
 //   })
-// }
+
+//   const h = document.createElement('h1');
+//   h.textContent = '取得中'
+//   output.appendChild(h);
+
+//   const hr1 = document.createElement('hr');
+//   output.appendChild(hr1);
+
+//   const p = document.createElement('p');
+//   p.textContent = '少々お待ちください。';
+//   output.appendChild(p);
+
+//   const hr2 = document.createElement('hr');
+//   output.appendChild(hr2);
+
+//   displayQuizPage();
+//   resolve();
+// })
+
+// const finishDisplayStayPage = new Promise((resolve, reject) => {
+//   displayStayPage();
+//   resolve();
+// })
+
+const displayQuiz = () => {
+  output.textContent = '';
+  console.log('add');
+  if (count < 10) {
+    displayQuizPage();
+    }else{
+    displayResult();
+  }
+}
 
 //クイズと選択肢を出力
-function displayQuiz() {
+function displayQuizPage() {
   count ++;
 
   //問題、ジャンル、難易度を出力
@@ -157,7 +201,7 @@ function displayQuiz() {
   output.appendChild(h);
 
   let janreContent = document.createElement('p');
-  janreContent.textContent = '[ジャンル]' + quiz[count].janre;
+  janreContent.textContent = '[ジャンル]' + quiz[count].category;
   output.appendChild(janreContent);
 
   let difficultyContent = document.createElement('p');
