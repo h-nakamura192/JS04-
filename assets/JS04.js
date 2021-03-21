@@ -3,8 +3,10 @@
 const output = document.getElementById('output');
 let count = 0;
 let correctAnswerCount = 0;
+let result = 0;
 let selectAnswer = '';
 let quiz = 0;
+let quizInstance = 0;
 
 //最初のページを作成
 function displayTopPage() {
@@ -29,77 +31,40 @@ function displayTopPage() {
 
   clickbtn.addEventListener('click', function() {
     output.textContent = '';
-    // function finishQuizContent() {
-    //   return new Promise((resolve) => {
-    //     resolve(quizContent);
-    //   })
-    // }
-
-    // function finishDisplayStayPage() {
-    //   return new Promise((resolve) => {
-    //     resolve(displayStayPage);
-    //   })
-    // }
-    // //「待機中」ページを出力し、fetchでのデータ読み込みが終了したらクイズ画面を出力
-    // Promise.all([
-    //   finishDisplayStayPage(),
-    //   finishQuizContent()
-    // ]).then(function(){
-    //   output.textContent = '';
-    //   console.log('add');
-    //   add();
-    // })
-
-    // const finishQuizContent = async function() {
-    //   quizContent();
-    // }
-
-    // const finishDisplayStayPage = async function() {
-    //   displayStayPage();
-    // }
-
-    // const displayQuizPage = async function() {
-    //   output.textContent = '';
-    //   console.log('add');
-    //   add();
-    // }
-
-    // const processAll = async function() {
-    //   await finishQuizContent();
-    //   await finishDisplayStayPage();
-    //   await displayQuizPage();
-    // }
-
-    // processAll();
-
     clickbtn.hidden = true;
-    fetchQuiz();
-
-     //finishQuizContent.then(finishDisplayStayPage).then(displayQuizPage);
+    newQuiz();
   } )
+
+  function newQuiz(){
+    if(count < 10) {
+      quizInstance = new Quiz();
+      quizInstance.getQuiz();
+    }
+  }
 }
 displayTopPage();
 
-const fetchQuiz = async() => {
-  const url = 'https://opentdb.com/api.php?amount=10';
-  fetch(url).then((response) => {
-    return response.json()
-  }).then((result) => {
-    // Example(result);
-    quiz = result.results;
-    console.log(quiz);
-  }).catch((e) => {
-    console.log(e)
-  })
 
-  // function Example(jsonObj){
-  //   quiz = jsonObj.result[0]
-  // }
 
-  // const json = (await fetch('https://opentdb.com/api.php?amount=10')).json().results;
-  // const obj =  JSON.parse(json);
-  // console.log(obj.results);
+// const fetchQuiz = async() => {
+//   const h = document.createElement('h1');
+//   h.textContent = '取得中'
+//   output.appendChild(h);
 
+//   const hr1 = document.createElement('hr');
+//   output.appendChild(hr1);
+
+//   const p = document.createElement('p');
+//   p.textContent = '少々お待ちください。';
+//   output.appendChild(p);
+
+//   const hr2 = document.createElement('hr');
+//   output.appendChild(hr2);
+
+//   displayQuiz();
+// }
+
+function displayFetchPage() {
   const h = document.createElement('h1');
   h.textContent = '取得中'
   output.appendChild(h);
@@ -113,106 +78,71 @@ const fetchQuiz = async() => {
 
   const hr2 = document.createElement('hr');
   output.appendChild(hr2);
-
-  displayQuiz();
 }
 
-//クイズを取り出す
-// const fetchQuiz1 = new Promise((resolve, reject) => {
-//   if (fetch('https://opentdb.com/api.php?amount=10')) {
-//     resolve(fetch('https://opentdb.com/api.php?amount=10').json());
-//   } else {
-//     reject();
-//   }
-// });
+class Quiz {
+  constructor() {
+    displayFetchPage();
+    const url = 'https://opentdb.com/api.php?amount=10';
+    async function fetchQuiz() {
+      await fetch(url).then((response) => {
+        return response.json()
+      }).then((result) => {
+        // Example(result);
+        quiz = result.results;
+        console.log(quiz);
+      }).catch((e) => {
+        console.log(e);
+      })
+    }
+    fetchQuiz();
 
-// const onFullfilled = () => {
-//   const h = document.createElement('h1');
-//   h.textContent = '取得中'
-//   output.appendChild(h);
-
-//   const hr1 = document.createElement('hr');
-//   output.appendChild(hr1);
-
-//   const p = document.createElement('p');
-//   p.textContent = '少々お待ちください。';
-//   output.appendChild(p);
-
-//   const hr2 = document.createElement('hr');
-//   output.appendChild(hr2);
-
-//   displayQuizPage();
-// }
-
-// const onRejected = () => {
-//   console.log('reject');
-// }
-
-// fetchQuiz1.then(onFullfilled, onRejected);
-
-
-// const fetchQuiz = new Promise((resolve, reject) => {
-//   quiz = fetch('https://opentdb.com/api.php?amount=10').then(function  (response) {
-//     return response.json();
-//   }).then(function(json) {
-//       return json.results;
-//   })
-
-//   const h = document.createElement('h1');
-//   h.textContent = '取得中'
-//   output.appendChild(h);
-
-//   const hr1 = document.createElement('hr');
-//   output.appendChild(hr1);
-
-//   const p = document.createElement('p');
-//   p.textContent = '少々お待ちください。';
-//   output.appendChild(p);
-
-//   const hr2 = document.createElement('hr');
-//   output.appendChild(hr2);
-
-//   displayQuizPage();
-//   resolve();
-// })
-
-// const finishDisplayStayPage = new Promise((resolve, reject) => {
-//   displayStayPage();
-//   resolve();
-// })
-
-const displayQuiz = () => {
-  output.textContent = '';
-  console.log('add');
-  if (count < 10) {
-    displayQuizPage();
-    }else{
-    displayResult();
+    this.theQuiz = quiz[count];
+    console.log(quiz);
+    this.category = theQuiz.category;
+    this.difficulty = theQuiz.difficulty;
+    this.question = theQuiz.question;
+    this.type = theQuiz.type;
+    this.correctAnswer = theQuiz.correct_answer;
+    this.incorrectAnsers = theQuiz.incorrect_answers;
+  }
+  getQuiz() {
+    output.textContent = '';
+    count++;
+    if (count <= 10) {
+      displayQuizPage();
+      }else{
+      displayResult();
+    }
+    //正解を選択した場合にカウントする
+    if (selectAnswer = correctAnswer) {
+      correctAnswerCount ++;
+    }
   }
 }
 
+
+
 //クイズと選択肢を出力
 function displayQuizPage() {
-  count ++;
-
   //問題、ジャンル、難易度を出力
   let h = document.createElement('h1');
   h.textContent = '問題' + count;
   output.appendChild(h);
 
   let janreContent = document.createElement('p');
-  janreContent.textContent = '[ジャンル]' + quiz[count].category;
+  janreContent.textContent = '[ジャンル]' + quizInstance.category;
   output.appendChild(janreContent);
 
   let difficultyContent = document.createElement('p');
-  difficultyContent.textContent = '[難易度]' + quiz[count].difficulty;
+  difficultyContent.textContent = '[難易度]' + quizInstance.difficulty;
   output.appendChild(difficultyContent);
 
   const hr1 = document.createElement('hr');
   output.appendChild(hr1);
 
   const questionContent = document.createElement('p');
-  questionContent.textContent = quiz[count].question;
+  questionContent.textContent = quizInstance.question;
   output.appendChild(questionContent);
 
   const hr2 = document.createElement('hr');
@@ -222,7 +152,7 @@ function displayQuizPage() {
   output.appendChild(btnDiv);
 
   //選択肢を出力
-  if( quiz[count].type === 'boolean') {
+  if( quizInstance.type === 'boolean') {
     //YesNoクエスチョンのとき
     const trueBtn = document.createElement('input');
     trueBtn.type = 'button';
@@ -240,18 +170,12 @@ function displayQuizPage() {
     trueBtn.addEventListener('click', function() {
       output.textContent = '';
       selectAnswer = 'True';
-      quizContent();
+      return;
     })
     FalseBtn.addEventListener('click', function() {
       output.textContent = '';
       selectAnswer = 'False';
-      quizContent();
     })
-    //正解を選択した場合にカウントする
-    if (selectAnswer = quiz[count].correct_answer) {
-      correctAnswerCount ++;
-    }
-
   } else {
     //４択のとき
     let correctQuestionNumber = Math.random() * 3;
@@ -260,29 +184,26 @@ function displayQuizPage() {
         const answerBtn =document.createElement('input');
         answerBtn.type = 'button';
         answerBtn.classList.add('btn');
-        answerBtn.value = quiz[count].correct_answer;
+        answerBtn.value = quizInstance.correctAnswer;
         btnDiv.appendChild(answerBtn)
 
         //ボタン押下された際の処理を記載
         answerBtn.addEventListener('click', function() {
         output.textContent = '';
         correctAnswerCount ++;
-        quizContent();
+        return;
         })
       }
       const answerBtn =document.createElement('input');
       answerBtn.type = 'button';
-      // let arrayIncorrect_answers = incorrect_answers;
-      // console.log(incorrect_answers);
-      // answerBtn.value = arrayIncorrect_answers[i];
-      answerBtn.value = quiz[count].incorrect_answers[i];
+      answerBtn.value = quizInstance.incorrectAnswers[i];
       answerBtn.classList.add('btn');
       btnDiv.appendChild(answerBtn);
 
       //ボタン押下された際の処理を記載
       answerBtn.addEventListener('click', function() {
         output.textContent = '';
-        quizContent();
+        return;
       })
     }
   }
